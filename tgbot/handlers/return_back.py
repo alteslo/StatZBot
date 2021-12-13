@@ -1,0 +1,36 @@
+from aiogram import Dispatcher, types
+from aiogram.dispatcher.storage import FSMContext
+
+from tgbot.misc.states import Interview
+from tgbot.keyboards import inline
+from tgbot.keyboards.callback_datas import back_callback
+
+
+async def return_to_stat_processing_choice(call: types.CallbackQuery,
+                                           callback_data: dict,
+                                           state: FSMContext):
+    # Подумать о сбросе состояния
+    await state.update_data(chosen_stat_processing="")
+
+    choice = callback_data.get(("deep"))
+    user_id = call.from_user.id
+
+    if choice == "stat_choice":
+        keyboard = await inline.kb_stat_processing_choice(user_id)
+        await call.message.edit_text(text="Выберите вид анализа:",
+                                     reply_markup=keyboard)
+        await Interview.waiting_for_stat_processing_choice.set()
+    elif choice == "start":
+        keyboard = await inline.kb_service_selection()
+        await call.message.edit_text(text="Какую услугу вы хотите получить?",
+                                     reply_markup=keyboard)
+        # Был финиш стэйт
+        await state.reset_state()
+        await Interview.waiting_for_service_selection.set()
+    await call.answer()
+
+
+def register_return(dp: Dispatcher):
+    dp.register_callback_query_handler(return_to_stat_processing_choice,
+                                       back_callback.filter(),
+                                       state="*")
