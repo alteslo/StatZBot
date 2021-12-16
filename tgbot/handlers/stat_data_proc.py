@@ -48,17 +48,22 @@ async def stat_have_datas(call: types.CallbackQuery,
 async def stat_havent_datas(call: types.CallbackQuery,
                             state: FSMContext):
     # keyboard = await inline.kb_yes_no()
+    text = ("Для статистической обработки необходимо собрать данные. \n"
+            "Для того чтобы Вам было удобнее мы подготовили для Вас шаблон "
+            "базы данных и памятку по данным. \nТак Вы сможете формировать "
+            "данные сразу в необходимом формате для статистической обработки."
+            "\nСкачать их можно ниже")
+    keyboard = await inline.kb_return_start()
     await state.update_data(have_data="Нет")
+
     print(await state.get_data())
-    text = (
-        """Для статистической обработки необходимо собрать данные. Для того чтобы
-    Вам было удобнее мы подготовили для Вас шаблон базы данных и памятку по данным.
-    Так Вы сможете формировать данные сразу в необходимом формате для
-    статистической обработки. Скачать их можно ниже"""
-    )
 
     await call.message.edit_text(text=text)
     await call.message.answer("https://docs.google.com/spreadsheets/d/1xg4KaPw-amRCGW5RYAqKmU26Z5R6THVM/edit?usp=sharing&ouid=114362960612507406007&rtpof=true&sd=true")
+    await call.message.answer_photo(
+        types.InputFile('tgbot/misc/Памятка_данных.png'),
+        caption='Памятка',
+        reply_markup=keyboard)
 
     await Interview.waiting_for_stat_types_yes_no_answer.set()
     await call.answer()

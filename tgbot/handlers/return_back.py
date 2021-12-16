@@ -22,8 +22,16 @@ async def return_to_stat_processing_choice(call: types.CallbackQuery,
         await Interview.waiting_for_stat_processing_choice.set()
     elif choice == "start":
         keyboard = await inline.kb_service_selection()
-        await call.message.edit_text(text="Какую услугу вы хотите получить?",
-                                     reply_markup=keyboard)
+        if str(await state.get_state()) in ['Interview:waiting_for_stat_types_yes_no_answer']:
+            photo_src = types.InputFile('tgbot/misc/Памятка_данных.png')
+            photo = types.InputMediaPhoto(photo_src)
+            await call.message.edit_media(photo)
+            await call.message.answer(text="Какую услугу вы хотите получить?",
+                                      reply_markup=keyboard)
+        else:
+            await call.message.edit_text(
+                text="Какую услугу вы хотите получить?",
+                reply_markup=keyboard)
         # Был финиш стэйт
         await state.reset_state()
         await Interview.waiting_for_service_selection.set()

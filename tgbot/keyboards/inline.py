@@ -77,3 +77,15 @@ async def kb_yes_no(width=1):
     keyboard = types.InlineKeyboardMarkup(row_width=width)
     keyboard.add(*buttons)
     return keyboard
+
+
+async def kb_return_start():
+    """Клавиатура для возврата к предыдущим пунктам меню"""
+    buttons = [
+            types.InlineKeyboardButton(text="Вернуться в начало",
+                                       callback_data=back_callback.new(
+                                            deep="start"))
+        ]
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(*buttons)
+    return keyboard
