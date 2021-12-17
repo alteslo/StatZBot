@@ -1,6 +1,5 @@
 from aiogram import types
 
-from tgbot.services.datas import stat_datas
 from tgbot.keyboards.callback_datas import service_callback
 from tgbot.keyboards.callback_datas import stat_callback
 from tgbot.keyboards.callback_datas import back_callback
@@ -26,7 +25,7 @@ async def kb_service_selection(width=1):
     return keyboard
 
 
-async def kb_stat_processing_choice(user_id, width=1):
+async def kb_stat_processing_choice(user_id, stat_datas: dict):
     """Клавиатура для выбора услуг статистического анализа"""
     buttons = []
     for key in stat_datas:
@@ -36,11 +35,11 @@ async def kb_stat_processing_choice(user_id, width=1):
                                                     service=key)))
 
     buttons.append(
-        types.InlineKeyboardButton(text="Не нашли подходящий инструмент?",
-                                   callback_data=help_callback.new(
-                                       user_id=user_id))
+        types.InlineKeyboardButton(text="Вернуться к началу",
+                                   callback_data=back_callback.new(
+                                            deep="start"))
     )
-    keyboard = types.InlineKeyboardMarkup(row_width=width)
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(*buttons)
     return keyboard
 
