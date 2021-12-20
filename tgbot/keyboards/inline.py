@@ -25,7 +25,7 @@ async def kb_service_selection(width=1):
     return keyboard
 
 
-async def kb_stat_processing_choice(user_id, stat_datas: dict):
+async def kb_stat_processing_choice(stat_datas: dict):
     """Клавиатура для выбора услуг статистического анализа"""
     buttons = []
     for key in stat_datas:
@@ -44,12 +44,9 @@ async def kb_stat_processing_choice(user_id, stat_datas: dict):
     return keyboard
 
 
-async def kb_discount(user_id, width=1):
+async def kb_discount(width=1):
     """Клавиатура для выбора услуг статистического анализа"""
     buttons = [
-            types.InlineKeyboardButton(text="Хотите скидку?",
-                                       callback_data=help_callback.new(
-                                            user_id=user_id)),
             types.InlineKeyboardButton(text="Вернуться к выбору услуг",
                                        callback_data=back_callback.new(
                                             deep="stat_choice")),
@@ -85,6 +82,28 @@ async def kb_return_start():
                                        callback_data=back_callback.new(
                                             deep="start"))
         ]
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(*buttons)
+    return keyboard
+
+
+async def kb_forecast_mdl(stat_datas: dict):
+    buttons = []
+    for key in stat_datas:
+        buttons.append(
+            types.InlineKeyboardButton(text=stat_datas.get(key)[0],
+                                       callback_data=stat_callback.new(
+                                                    service=key)))
+    buttons.append(
+        types.InlineKeyboardButton(text="Вернуться к выбору услуг",
+                                   callback_data=back_callback.new(
+                                            deep="stat_choice"))
+    )
+    buttons.append(
+        types.InlineKeyboardButton(text="Вернуться к началу",
+                                   callback_data=back_callback.new(
+                                            deep="start"))
+    )
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(*buttons)
     return keyboard
