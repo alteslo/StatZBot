@@ -1,6 +1,5 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import message
 
 from tgbot.misc.states import Interview
 from tgbot.keyboards import inline
@@ -8,6 +7,7 @@ from tgbot.services import datas
 from tgbot.keyboards.callback_datas import service_callback
 from tgbot.keyboards.callback_datas import stat_callback
 from tgbot.keyboards.callback_datas import choice_callback
+from tgbot.keyboards.callback_datas import support_callback
 
 
 STAT_ANALYS_SERVICES = datas.stat_datas
@@ -155,17 +155,19 @@ async def stat_price_answer(call: types.CallbackQuery, callback_data: dict,
 async def stat_types_of_forecast(call: types.CallbackQuery,
                                  state: FSMContext,
                                  stat_datas=STAT_FORECAST_SERVICES):
-    print("Попал сюда")
     await state.update_data(chosen_stat_processing="Многофакторные модели прогноза")
     keyboard = await inline.kb_forecast_mdl(stat_datas)
     await call.message.edit_text(
                                 text="Выбереите необходимую модель:",
                                 reply_markup=keyboard)
+    await Interview.waiting_for_stat_forecast_choice.set()
     await call.answer()
 
 
-async def stat_forecast_price_answer(call: types.CallbackQuery, callback_data: dict,
-                                     state: FSMContext, stat_datas=STAT_FORECAST_SERVICES):
+async def stat_forecast_price_answer(
+    call: types.CallbackQuery, callback_data: dict,
+    state: FSMContext, stat_datas=STAT_FORECAST_SERVICES
+):
     choice = callback_data.get(("service"))
     keyboard = await inline.kb_discount()
     option = stat_datas[choice][0]
@@ -175,25 +177,76 @@ async def stat_forecast_price_answer(call: types.CallbackQuery, callback_data: d
     print(str(await state.get_data()))
     if choice == "dont_know":
         await call.message.edit_text(
-                                text=("Пришлите Ваши данные на почту aeo@statzilla.ru. \n"
-                                      "ОБЯЗАТЕЛЬНО в письме напишите ответ на вопросы ниже:\n"
-                                      "- Какая у вас задача исследования, что хотите доказать?\n"
-                                      "- Какие группы Вы рассматриваете, сколько их?\n"
-                                      "- В какой колонке в данных содержится информация о принадлежности к той или иной группе?\n"
-                                      "- Какие показатели должны быть включены в анализ? В каких колонках они содержатся?"
-                                      "В ответ мы пришлем полный расчет стоимости для Вас."),
-                                parse_mode='HTML',
-                                reply_markup=keyboard)
+            text=(
+                "Пришлите Ваши данные на почту aeo@statzilla.ru. \n"
+                "ОБЯЗАТЕЛЬНО в письме напишите ответ на вопросы ниже:\n"
+                "- Какая у вас задача исследования, что хотите доказать?\n"
+                "- Какие группы Вы рассматриваете, сколько их?\n"
+                "- В какой колонке в данных содержится информация о "
+                "принадлежности к той или иной группе?\n"
+                "- Какие показатели должны быть включены в анализ? В каких "
+                "колонках они содержатся?"
+                "В ответ мы пришлем полный расчет стоимости для Вас."
+            ),
+            parse_mode='HTML',
+            reply_markup=keyboard
+        )
     else:
         await call.message.edit_text(
-                                text=f"Вы выбрали: {option}.\n"
-                                    f"Ориентировочная стоимость услуги <u><b>{bill}</b></u> руб.\n"
-                                    f"пришлите Ваши данные на почту aeo@statzilla.ru. \n"
-                                    f"ОБЯЗАТЕЛЬНО в письме напишите ответ на вопросы ниже:\n- Какая у вас задача исследования, что хотите доказать?\n"
-                                    f"- Какой показатель вы хотите предсказать, в какой колонке он содержится?\n"
-                                    f"- Какие показатели должны быть включены в анализ?\n- В каких колонках они содержатся?",
-                                parse_mode='HTML',
-                                reply_markup=keyboard)
+            text=(
+                f"Вы выбрали: {option}.\n"
+                f"Ориентировочная стоимость услуги <u><b>{bill}</b></u> руб.\n"
+                f"пришлите Ваши данные на почту aeo@statzilla.ru. \n"
+                f"ОБЯЗАТЕЛЬНО в письме напишите ответ на вопросы ниже:\n- Какая у вас задача исследования, что хотите доказать?\n"
+                f"- Какой показатель вы хотите предсказать, в какой колонке он содержится?\n"
+                f"- Какие показатели должны быть включены в анализ?\n- В каких колонках они содержатся?"
+            ),
+            parse_mode='HTML',
+            reply_markup=keyboard
+        )
+    await Interview.price_answer.set()
+    await call.answer()
+
+
+async def stat_hypothesis(call: types.CallbackQuery):
+    keyboard = await inline.kb_yes_no()
+    await call.message.edit_text("У вас есть сформулированная гипотеза?", reply_markup=keyboard)
+    await Interview.waiting_for_stat_hypothesis_choice.set()
+    await call.answer()
+
+
+async def stat_hypothesis_answer(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
+    choice = callback_data.get(("answer"))
+    await state.update_data(have_hypothesis=choice)
+    print(str(await state.get_data()))
+    keyboard = await inline.kb_return_start()
+    if choice == "Yes":
+        await call.message.edit_text(
+            text=(
+                "Вам необходим дизайн исследования - это документ, который описывает, "
+                "какие методы статистического анализа и в каком порядке использовать "
+                "конкретно на Ваших данных, чтобы доказать Вашу гипотезу. Он также дает "
+                "ответ на вопрос, какой размер выборки Вам нужен, то есть достаточно ли "
+                "у Вас данных; т.е. если у Вас уже есть данные и Вы понимаете что хотите "
+                "увидеть на выходе (что доказать). \nСтоимость <u><b>8000</b></u> руб."
+                "\nПришлите Вашу тему и наработки (если они есть) на почту aeo@statzilla.ru/"
+            ),
+            reply_markup=keyboard
+        )
+    else:
+        await call.message.edit_text(
+            text=(
+                "Вам необходим разведочный анализ - это глубинный поисковой анализ всех "
+                "ваших данных. Он позволит выявить что есть интересного в ваших данных, "
+                "какие существуют связи и зависимости. На основе этой информации Вы сможете "
+                "сформулировать научную гипотезу и тему исследования; т.е. если у Вас есть "
+                "данные, но нет понимания, что Вы хотите на выходе. Мы предлагаем Вам варианты."
+                "\nСтоимость <u><b>10000</b></u> руб."
+                "\nПришлите Вашу тему и наработки (если они есть) на почту aeo@statzilla.ru/"
+            ),
+            reply_markup=keyboard
+        )
+    await call.answer()
 
 
 def register_analysis(dp: Dispatcher):
@@ -226,4 +279,24 @@ def register_analysis(dp: Dispatcher):
         stat_price_answer,
         stat_callback.filter(),
         state=Interview.waiting_for_stat_processing_choice
+        )
+    dp.register_callback_query_handler(
+        stat_forecast_price_answer,
+        stat_callback.filter(),
+        state=Interview.waiting_for_stat_forecast_choice
+        )
+    dp.register_callback_query_handler(
+        stat_hypothesis,
+        choice_callback.filter(answer="No"),
+        state=Interview.waiting_for_stat_types_yes_answer
+        )
+    dp.register_callback_query_handler(
+        stat_hypothesis,
+        support_callback.filter(messages="dont_know"),
+        state=Interview.waiting_for_stat_processing_choice
+        )
+    dp.register_callback_query_handler(
+        stat_hypothesis_answer,
+        choice_callback.filter(),
+        state=Interview.waiting_for_stat_hypothesis_choice
         )

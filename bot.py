@@ -9,7 +9,9 @@ from tgbot.config import load_config
 from tgbot.filters.admin import AdminFilter
 from tgbot.handlers.common import register_common
 from tgbot.handlers.stat_data_proc import register_analysis
+from tgbot.handlers.litrev import register_lit_rev
 from tgbot.handlers.return_back import register_return
+from tgbot.handlers.presentation import register_presentation
 from tgbot.middlewares.db import DbMiddleware
 
 logger = logging.getLogger(__name__)
@@ -26,7 +28,8 @@ def register_all_filters(dp):
 def register_all_handlers(dp):
     register_common(dp)
     register_analysis(dp)
-
+    register_lit_rev(dp)
+    register_presentation(dp)
     register_return(dp)
 
 

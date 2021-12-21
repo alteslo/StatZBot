@@ -6,7 +6,5 @@ back_callback = CallbackData("back", "deep")
 help_callback = CallbackData("help", "user_id")
 choice_callback = CallbackData("choice", "answer")
 
-support_callback = CallbackData(
-    "ask_support", "messages", "user_id", "as_user"
-    )
+support_callback = CallbackData("ask_support", "messages")
 cancel_support_callback = CallbackData("cancel_support", "user_id")
