@@ -3,13 +3,14 @@ from aiogram.dispatcher.storage import FSMContext
 
 from tgbot.misc.states import Interview
 from tgbot.keyboards import inline
-
+from tgbot.services.google_sheets import create_spreadsheet, add_worksheet, share_spreadsheet, fill_in_data
 from tgbot.keyboards.callback_datas import service_callback
 
 
 async def lit_rev_choice(call: types.CallbackQuery, state: FSMContext):
     await state.update_data(chosen_main_service="Литобзор")
     print(str(await state.get_data()))
+
     keyboard = await inline.kb_return_start()
     await call.message.edit_text(
         text=(
@@ -24,6 +25,16 @@ async def lit_rev_choice(call: types.CallbackQuery, state: FSMContext):
         reply_markup=keyboard
     )
     await call.answer()
+    state_data = await state.get_data()
+    data = tuple((state_data.values()))
+    print(data)
+    # data = (("1", "2", "3", "4", "5"), ())
+    google_client_manager = call.bot.get('google_client_manager')
+    google_client = await google_client_manager.authorize()
+    key = '1lv-kpvCo66N8ynKl1wdLdh8q6NXwtxhQvzgJwh6Cf_8'
+    spreadsheet = await google_client.open_by_key(key)
+    worksheet = await spreadsheet.worksheet('Sheet6')
+    await fill_in_data(worksheet, data, headers=['ID', 'Name', 'Phone', 'Address', 'Orders Amount'])
 
 
 def register_lit_rev(dp: Dispatcher):
