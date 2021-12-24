@@ -23,6 +23,7 @@ class TgBot:
 @dataclass
 class Miscellaneous:
     scoped_credentials: Any = None
+    gsheet_key: str = None
 
 
 @dataclass
@@ -63,6 +64,7 @@ def load_config(path: str = None):
             database=env.str('DB_NAME')
         ),
         misc=Miscellaneous(
-            scoped_credentials=scoped_credentials
+            scoped_credentials=scoped_credentials,
+            gsheet_key=env.str('GOOGLE_KEY')
         )
     )

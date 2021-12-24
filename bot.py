@@ -48,8 +48,10 @@ async def main():
     google_client_manager = gspread_asyncio.AsyncioGspreadClientManager(
         config.misc.scoped_credentials
     )
+    gsheet_key = config.misc.gsheet_key
     bot['config'] = config
     bot['google_client_manager'] = google_client_manager
+    bot['gsheet_key'] = gsheet_key
 
     register_all_middlewares(dp)
     register_all_filters(dp)

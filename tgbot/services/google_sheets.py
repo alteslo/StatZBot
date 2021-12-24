@@ -29,17 +29,20 @@ async def share_spreadsheet(async_spreadsheet: gspread_asyncio.AsyncioGspreadSpr
 
 async def fill_in_data(worksheet: gspread_asyncio.AsyncioGspreadWorksheet, data: typing.Tuple[typing.Tuple],
                        headers: typing.List[str]):
-    await worksheet.clear()
-    headers_cells = [
+    # await worksheet.clear()
+    '''headers_cells = [
         Cell(
             1, column, value=text
         ) for column, text in enumerate(headers, start=1)
     ]
     await worksheet.update_cells(
         headers_cells
-    )
+    )'''
     # await worksheet.insert_row(headers)
-    cells_list = []
+
+    await worksheet.append_row(data)
+
+    '''cells_list = []
 
     for n_row, row in enumerate(data, start=2):
         for n_col, value in enumerate(row, start=1):
@@ -49,9 +52,9 @@ async def fill_in_data(worksheet: gspread_asyncio.AsyncioGspreadWorksheet, data:
                 )
             )
 
-    await worksheet.update_cells(
+    await worksheet.insert_row(
         cells_list
-    )
+    )'''
     # format_header(worksheet.ws)
 
 

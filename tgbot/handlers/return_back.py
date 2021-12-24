@@ -23,6 +23,7 @@ async def return_to_stat_processing_choice(call: types.CallbackQuery,
         keyboard = await inline.kb_stat_processing_choice(stat_datas)
         await call.message.edit_text(text="Выберите вид анализа:",
                                      reply_markup=keyboard)
+        await state.reset_state()
         await Interview.waiting_for_stat_processing_choice.set()
     elif choice == "start":
         keyboard = await inline.kb_service_selection()

@@ -8,6 +8,7 @@ from tgbot.keyboards.callback_datas import service_callback
 from tgbot.keyboards.callback_datas import stat_callback
 from tgbot.keyboards.callback_datas import choice_callback
 from tgbot.keyboards.callback_datas import support_callback
+from tgbot.misc.convert import gsheet_add_data
 
 
 STAT_ANALYS_SERVICES = datas.stat_datas
@@ -64,6 +65,8 @@ async def stat_havent_datas(call: types.CallbackQuery,
 
     await Interview.waiting_for_stat_types_no_answer.set()
     await call.answer()
+    state_data = await state.get_data()
+    await gsheet_add_data(call, state_data)
 
 
 async def stat_types_of_analyses(
@@ -150,6 +153,8 @@ async def stat_price_answer(call: types.CallbackQuery, callback_data: dict,
                             reply_markup=keyboard)
     await Interview.price_answer.set()
     await call.answer()
+    state_data = await state.get_data()
+    await gsheet_add_data(call, state_data)
 
 
 async def stat_types_of_forecast(call: types.CallbackQuery,
@@ -206,6 +211,8 @@ async def stat_forecast_price_answer(
         )
     await Interview.price_answer.set()
     await call.answer()
+    state_data = await state.get_data()
+    await gsheet_add_data(call, state_data)
 
 
 async def stat_hypothesis(call: types.CallbackQuery):
@@ -217,10 +224,11 @@ async def stat_hypothesis(call: types.CallbackQuery):
 
 async def stat_hypothesis_answer(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
     choice = callback_data.get(("answer"))
-    await state.update_data(have_hypothesis=choice)
+    # await state.update_data(have_hypothesis=choice)
     print(str(await state.get_data()))
     keyboard = await inline.kb_return_start()
     if choice == "Yes":
+        await state.update_data(have_hypothesis='Да')
         await call.message.edit_text(
             text=(
                 "Вам необходим дизайн исследования - это документ, который описывает, "
@@ -234,6 +242,7 @@ async def stat_hypothesis_answer(call: types.CallbackQuery, callback_data: dict,
             reply_markup=keyboard
         )
     else:
+        await state.update_data(have_hypothesis="Нет")
         await call.message.edit_text(
             text=(
                 "Вам необходим разведочный анализ - это глубинный поисковой анализ всех "
@@ -247,6 +256,8 @@ async def stat_hypothesis_answer(call: types.CallbackQuery, callback_data: dict,
             reply_markup=keyboard
         )
     await call.answer()
+    state_data = await state.get_data()
+    await gsheet_add_data(call, state_data)
 
 
 def register_analysis(dp: Dispatcher):

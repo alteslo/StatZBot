@@ -3,7 +3,7 @@ from aiogram.dispatcher.storage import FSMContext
 
 from tgbot.misc.states import Interview
 from tgbot.keyboards import inline
-
+from tgbot.misc.convert import gsheet_add_data
 from tgbot.keyboards.callback_datas import service_callback
 
 
@@ -21,6 +21,8 @@ async def presentation_choice(call: types.CallbackQuery, state: FSMContext):
         reply_markup=keyboard
     )
     await call.answer()
+    state_data = await state.get_data()
+    await gsheet_add_data(call, state_data)
 
 
 def register_presentation(dp: Dispatcher):
