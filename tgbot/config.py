@@ -21,6 +21,11 @@ class TgBot:
 
 
 @dataclass
+class Redis:
+    host: str
+
+
+@dataclass
 class Miscellaneous:
     scoped_credentials: Any = None
     gsheet_key: str = None
@@ -31,6 +36,7 @@ class Config:
     tg_bot: TgBot
     db: DbConfig
     misc: Miscellaneous
+    redis: Redis
 
 
 def get_scoped_credentials(credentials, scopes):
@@ -55,7 +61,11 @@ def load_config(path: str = None):
         tg_bot=TgBot(
             token=env.str("BOT_TOKEN"),
             admin_ids=list(map(int, env.list("ADMINS"))),
-            use_redis=env.bool("USE_REDIS"),
+            use_redis=env.bool("USE_REDIS")
+        ),
+
+        redis=Redis(
+            host=env.str("REDIS_HOST")
         ),
         db=DbConfig(
             host=env.str('DB_HOST'),
