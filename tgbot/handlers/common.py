@@ -9,15 +9,8 @@ from tgbot.misc.states import Interview
 async def interview_start(message: types.Message, state: FSMContext):
     """Обработчик первого шага, реагирующий на команду start"""
     await state.finish()
-    # user_id = message.from_user.id
-    user_name = message.from_user.first_name
-    # user_fname = message.from_user.full_name
 
-    '''try:
-        db.add_user(user_id, user_fname)
-    except sqlite3.IntegrityError as err:
-        print("___________________________________________")
-        print(err)'''
+    user_name = message.from_user.first_name
 
     await message.answer(text=f"Приветствую, {user_name}!",
                          reply_markup=types.ReplyKeyboardRemove())

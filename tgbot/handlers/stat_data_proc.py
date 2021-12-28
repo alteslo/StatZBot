@@ -61,7 +61,14 @@ async def stat_havent_datas(call: types.CallbackQuery,
     await call.message.answer_photo(
                             types.InputFile('tgbot/misc/Памятка_данных.png'),
                             caption='Памятка',
-                            reply_markup=keyboard)
+                            )
+    await call.message.answer(
+        text=(
+            "Чтобы получить точный расчет стоимости для вас, пришлите Ваши "
+            "данные на почту aeo@statzilla.ru."
+        ),
+        reply_markup=keyboard
+    )
 
     await Interview.waiting_for_stat_types_no_answer.set()
     await call.answer()
