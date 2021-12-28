@@ -34,8 +34,6 @@ async def stat_have_datas(call: types.CallbackQuery,
     keyboard = await inline.kb_yes_no()
     await state.update_data(have_data="Да")
 
-    print(await state.get_data())
-
     await call.message.edit_text(text="Знаете ли Вы какие виды анализа нужны?",
                                  reply_markup=keyboard)
     await Interview.waiting_for_stat_types_yes_answer.set()
@@ -53,8 +51,6 @@ async def stat_havent_datas(call: types.CallbackQuery,
     keyboard = await inline.kb_return_start()
 
     await state.update_data(have_data="Нет")
-
-    print(await state.get_data())
 
     await call.message.edit_text(text=text)
     await call.message.answer("https://docs.google.com/spreadsheets/d/1xg4KaPw-amRCGW5RYAqKmU26Z5R6THVM/edit?usp=sharing&ouid=114362960612507406007&rtpof=true&sd=true")
@@ -83,8 +79,6 @@ async def stat_types_of_analyses(
     '''Выбор видов анализа состояние waiting_for_stat_types_yes_answer'''
     await state.update_data(know_types_anls="Да")
 
-    print(await state.get_data())
-
     keyboard = await inline.kb_stat_processing_choice(stat_datas)
 
     await call.message.edit_text(text='Выберете вид анализа', reply_markup=keyboard)
@@ -100,7 +94,6 @@ async def stat_price_answer(call: types.CallbackQuery, callback_data: dict,
     bill = stat_datas[choice][1]
 
     await state.update_data(chosen_stat_processing=option)
-    print(str(await state.get_data()))
 
     if choice in ["data_descr", "comparing"]:
         await call.message.edit_text(
@@ -186,7 +179,6 @@ async def stat_forecast_price_answer(
     bill = stat_datas[choice][1]
 
     await state.update_data(chosen_forecast_option=option)
-    print(str(await state.get_data()))
     if choice == "dont_know":
         await call.message.edit_text(
             text=(
@@ -232,7 +224,6 @@ async def stat_hypothesis(call: types.CallbackQuery):
 async def stat_hypothesis_answer(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
     choice = callback_data.get(("answer"))
     # await state.update_data(have_hypothesis=choice)
-    print(str(await state.get_data()))
     keyboard = await inline.kb_return_start()
     if choice == "Yes":
         await state.update_data(have_hypothesis='Да')

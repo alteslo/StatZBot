@@ -1,6 +1,5 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
 
 from tgbot.keyboards import inline
 from tgbot.misc.states import Interview
@@ -30,7 +29,3 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
 
 def register_common(dp: Dispatcher):
     dp.register_message_handler(interview_start, commands="start", state="*")
-    dp.register_message_handler(cmd_cancel, commands="cancel", state="*")
-    dp.register_message_handler(cmd_cancel,
-                                Text(equals="отмена", ignore_case=True),
-                                state="*")
