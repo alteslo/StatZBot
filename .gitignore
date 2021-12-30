@@ -62,6 +62,3 @@ venv.bak/
 .idea/*
 .env
 tgbot/config-google.json
-
-redis_config/
-redis_data/
