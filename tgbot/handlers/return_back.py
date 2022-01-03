@@ -29,8 +29,7 @@ async def return_to_stat_processing_choice(call: types.CallbackQuery,
         keyboard = await inline.kb_service_selection()
         if str(await state.get_state()) in ['Interview:waiting_for_stat_types_no_answer']:
             photo_src = types.InputFile('tgbot/misc/Памятка_данных.png')
-            photo = types.InputMediaPhoto(photo_src)
-            await call.message.edit_media(photo)
+            await call.message.answer_photo(photo_src)
             await call.message.answer(text="Какую услугу вы хотите получить?",
                                       reply_markup=keyboard)
         else:
