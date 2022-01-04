@@ -1,9 +1,7 @@
 import typing
 
-import gspread
 import gspread_asyncio
 # import gspread_formatting
-from gspread import Cell
 from gspread_asyncio import AsyncioGspreadClient
 # from gspread_formatting import CellFormat, Borders, Border, TextFormat
 
@@ -27,8 +25,7 @@ async def share_spreadsheet(async_spreadsheet: gspread_asyncio.AsyncioGspreadSpr
     await async_spreadsheet.share(email, perm_type=perm_type, role=role)
 
 
-async def fill_in_data(worksheet: gspread_asyncio.AsyncioGspreadWorksheet, data: typing.Tuple[typing.Tuple],
-                       headers: typing.List[str]):
+async def fill_in_data(worksheet: gspread_asyncio.AsyncioGspreadWorksheet, data: typing.Tuple[typing.Tuple]):
     # await worksheet.clear()
     '''headers_cells = [
         Cell(

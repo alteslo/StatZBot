@@ -3,6 +3,7 @@ from aiogram.dispatcher import FSMContext
 
 from tgbot.keyboards import inline
 from tgbot.misc.states import Interview
+from tgbot.config import Config
 
 
 async def interview_start(message: types.Message, state: FSMContext):
@@ -13,7 +14,9 @@ async def interview_start(message: types.Message, state: FSMContext):
 
     await message.answer(text=f"Приветствую, {user_name}!",
                          reply_markup=types.ReplyKeyboardRemove())
-    keyboard = await inline.kb_service_selection()
+    config: Config = message.bot.get("config")
+    id_manager = config.tg_bot.support_ids
+    keyboard = await inline.kb_service_selection(*id_manager)
     await message.answer(text="Какую услугу вы хотите получить?",
                          reply_markup=keyboard)
 

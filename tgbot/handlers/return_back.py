@@ -5,6 +5,7 @@ from tgbot.misc.states import Interview
 from tgbot.keyboards import inline
 from tgbot.services import datas
 from tgbot.keyboards.callback_datas import back_callback
+from tgbot.config import Config
 
 
 STAT_ANALYS_SERVICES = datas.stat_datas
@@ -26,7 +27,9 @@ async def return_to_stat_processing_choice(call: types.CallbackQuery,
         await state.reset_state()
         await Interview.waiting_for_stat_processing_choice.set()
     elif choice == "start":
-        keyboard = await inline.kb_service_selection()
+        config: Config = call.bot.get("config")
+        id_manager = config.tg_bot.support_ids
+        keyboard = await inline.kb_service_selection(*id_manager)
         if str(await state.get_state()) in ['Interview:waiting_for_stat_types_no_answer']:
             photo_src = types.InputFile('tgbot/misc/Памятка_данных.png')
             await call.message.answer_photo(photo_src)

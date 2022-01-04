@@ -1,4 +1,5 @@
 from aiogram import types
+import datetime
 
 from tgbot.keyboards.callback_datas import service_callback
 from tgbot.keyboards.callback_datas import stat_callback
@@ -7,7 +8,7 @@ from tgbot.keyboards.callback_datas import choice_callback
 from tgbot.keyboards.callback_datas import support_callback
 
 
-async def kb_service_selection(width=1):
+async def kb_service_selection(id_manager):
     """Клавиатура для основного выбора услуг"""
     buttons = [
         types.InlineKeyboardButton(text="Статистическая обработка данных",
@@ -20,8 +21,16 @@ async def kb_service_selection(width=1):
                                    callback_data=service_callback.new(
                                         main_services="other"))
     ]
-    keyboard = types.InlineKeyboardMarkup(row_width=width)
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(*buttons)
+    num_day = datetime.datetime.today().weekday()
+    if num_day in [5, 6]:
+        keyboard.add(
+            types.InlineKeyboardButton(
+                text="Напишите нашему менеджеру",
+                url=f"tg://user?id={id_manager}"
+                )
+            )
     return keyboard
 
 
