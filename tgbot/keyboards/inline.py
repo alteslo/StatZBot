@@ -24,7 +24,7 @@ async def kb_service_selection(id_manager):
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(*buttons)
     num_day = datetime.datetime.today().weekday()
-    if num_day in [5, 6]:
+    if num_day not in [5, 6]:
         keyboard.add(
             types.InlineKeyboardButton(
                 text="Напишите нашему менеджеру",
