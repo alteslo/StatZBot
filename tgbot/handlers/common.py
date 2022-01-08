@@ -16,7 +16,7 @@ async def interview_start(message: types.Message, state: FSMContext):
                          reply_markup=types.ReplyKeyboardRemove())
     config: Config = message.bot.get("config")
     id_manager = config.tg_bot.support_ids
-    keyboard = await inline.kb_service_selection(*id_manager)
+    keyboard = await inline.kb_service_selection(id_manager[0])
     await message.answer(text="Какую услугу вы хотите получить?",
                          reply_markup=keyboard)
 
